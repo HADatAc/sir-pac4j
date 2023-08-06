@@ -1,34 +1,36 @@
 package authorizers;
 
-// import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.pac4j.core.authorization.authorizer.ProfileAuthorizer;
 import org.pac4j.core.authorization.authorizer.RequireAllRolesAuthorizer;
 import org.pac4j.core.context.WebContext;
+import org.pac4j.core.context.session.SessionStore;
 import org.pac4j.core.exception.http.HttpAction;
-import org.pac4j.core.profile.CommonProfile;
+import org.pac4j.core.profile.UserProfile;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import net.minidev.json.JSONArray;
+import java.util.ArrayList;
 
-public class AuthenticatedAuthorizer extends ProfileAuthorizer<CommonProfile> {
+public class AuthenticatedAuthorizer extends ProfileAuthorizer {
 
     @Override
-    public boolean isAuthorized(final WebContext context, final List<CommonProfile> profiles) throws HttpAction {
+    public boolean isAuthorized(final WebContext context, final SessionStore sessionStore, final List<UserProfile> profiles) throws HttpAction {
 //        System.out.println("Is  DataOwnerRoleAuthorizer authorised was called:"+isAnyAuthorized(context, profiles));
-        return isAnyAuthorized(context, profiles);
+        return isAnyAuthorized(context, sessionStore, profiles);
     }
 
     @Override
-    public  boolean isProfileAuthorized(final WebContext context, final CommonProfile profile) {
+    public  boolean isProfileAuthorized(final WebContext context,  final SessionStore sessionStore, final UserProfile profile) {
         if (profile == null) {
             return false;
         }
         Set<String> roles = profile.getRoles();
-        JSONArray attributeRolesArray = profile.getAttribute("roles", JSONArray.class);
+        List attributeRolesArray = (ArrayList)profile.getAttribute("roles");
         System.out.println("Is DataOwnerRoleAuthorizer profile authorised was called");
+         
         String[] attributeRoles = null;
         if (attributeRolesArray != null) {
             attributeRoles = new String[attributeRolesArray.size()];
@@ -41,6 +43,7 @@ public class AuthenticatedAuthorizer extends ProfileAuthorizer<CommonProfile> {
             List<String> attributeRolesList = Arrays.asList(attributeRoles);
              return attributeRolesList.contains(Roles.AUTHENTICATED);
         }
+        
         return false;
     }
 

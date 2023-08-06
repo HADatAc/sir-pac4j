@@ -1,4 +1,4 @@
-@(profileList: java.util.List[org.pac4j.core.profile.CommonProfile], token: String, sessionId: String)
+@(profile: org.pac4j.core.profile.UserProfile, token: String, sessionId: String)
 <h1>index</h1>
 <!--
 <a href="facebook/index.html">Protected url by Facebook : facebook/index.html</a> (use a real account)<br />
@@ -35,7 +35,7 @@
 <a href="/centralLogout?url=http://localhost:9000/?forcepostlogouturlafteridp">central logout</a>
 -->
 <br /><br />
-profiles: @profileList<br />
+profiles: @profile<br />
 <br />
 <!--
 sessionId: @sessionId

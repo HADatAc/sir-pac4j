@@ -1,10 +1,10 @@
 package modules;
 
-import be.objectify.deadbolt.java.cache.HandlerCache;
+//import be.objectify.deadbolt.java.cache.HandlerCache;
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Provides;
-import controllers.CustomAuthorizer;
+//import controllers.CustomAuthorizer;
 import authorizers.AuthenticatedAuthorizer;
 import authorizers.AdministratorAuthorizer;
 import authorizers.Roles;
@@ -17,6 +17,7 @@ import org.pac4j.core.client.Clients;
 import org.pac4j.core.client.direct.AnonymousClient;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.context.HttpConstants;
+import org.pac4j.core.context.session.SessionStore;
 //import org.pac4j.core.credentials.UsernamePasswordCredentials;
 import org.pac4j.core.credentials.authenticator.Authenticator;
 import org.pac4j.core.matching.matcher.PathMatcher;
@@ -35,11 +36,11 @@ import org.pac4j.jwt.credentials.authenticator.JwtAuthenticator;
 //import org.pac4j.oidc.config.OidcConfiguration;
 //import org.pac4j.play.CallbackController;
 //import org.pac4j.play.LogoutController;
-import org.pac4j.play.deadbolt2.Pac4jHandlerCache;
-import org.pac4j.play.deadbolt2.Pac4jRoleHandler;
+//import org.pac4j.play.deadbolt2.Pac4jHandlerCache;
+//import org.pac4j.play.deadbolt2.Pac4jRoleHandler;
 import org.pac4j.play.http.PlayHttpActionAdapter;
 import org.pac4j.play.store.PlayCacheSessionStore;
-import org.pac4j.play.store.PlaySessionStore;
+//import org.pac4j.play.store.PlaySessionStore;
 //import org.pac4j.saml.client.SAML2Client;
 //import org.pac4j.saml.config.SAML2Configuration;
 import play.Environment;
@@ -48,6 +49,7 @@ import java.io.File;
 import java.util.Optional;
 
 //import org.pac4j.http.client.direct.DirectFormClient;
+import play.cache.SyncCacheApi;
 import util.Utils;
 
 import static play.mvc.Results.forbidden;
@@ -59,7 +61,7 @@ public class SecurityModule extends AbstractModule {
 
     private final com.typesafe.config.Config configuration;
 
-    private static class MyPac4jRoleHandler implements Pac4jRoleHandler { }
+    //private static class MyPac4jRoleHandler implements Pac4jRoleHandler { }
 
     private final String baseUrl;
 
@@ -71,11 +73,12 @@ public class SecurityModule extends AbstractModule {
     @Override
     protected void configure() {
 
-        bind(HandlerCache.class).to(Pac4jHandlerCache.class);
-        bind(Pac4jRoleHandler.class).to(MyPac4jRoleHandler.class);
+        //bind(HandlerCache.class).to(Pac4jHandlerCache.class);
+        //bind(Pac4jRoleHandler.class).to(MyPac4jRoleHandler.class);
 
-        //bind(PlaySessionStore.class).toInstance(playCacheSessionStore);
-        bind(PlaySessionStore.class).to(PlayCacheSessionStore.class);
+        //PlayCacheSessionStore playCacheSessionStore = new PlayCacheSessionStore(getProvider(SyncCacheApi.class));
+        //bind(SessionStore.class).toInstance(playCacheSessionStore);
+        bind(SessionStore.class).to(PlayCacheSessionStore.class);
 
         // callback
         //final CallbackController callbackController = new CallbackController();
@@ -220,7 +223,7 @@ public class SecurityModule extends AbstractModule {
     */
 
     @Provides
-    protected Config provideConfig(HeaderClient headerClient) {
+    protected Config provideConfig(HeaderClient headerClient, SessionStore sessionStore) {
     //protected Config provideConfig(FacebookClient facebookClient, TwitterClient twitterClient, FormClient formClient,
     //                               IndirectBasicAuthClient indirectBasicAuthClient, CasClient casClient, 
     //                               ParameterClient parameterClient, DirectBasicAuthClient directBasicAuthClient,
@@ -243,7 +246,8 @@ public class SecurityModule extends AbstractModule {
         config.addAuthorizer(Roles.ADMINISTRATOR, new AdministratorAuthorizer());
         //config.addMatcher("excludedPath", new PathMatcher().excludeRegex("^/facebook/notprotected\\.html$"));
         // for deadbolt:
-        config.setHttpActionAdapter(PlayHttpActionAdapter.INSTANCE);
+        //config.setHttpActionAdapter(PlayHttpActionAdapter.INSTANCE);
+        config.setSessionStoreFactory(p -> sessionStore);
         return config;
     }
 }

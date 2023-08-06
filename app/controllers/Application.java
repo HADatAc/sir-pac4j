@@ -1,15 +1,17 @@
 package controllers;
 
-import be.objectify.deadbolt.java.actions.SubjectPresent;
+//import be.objectify.deadbolt.java.actions.SubjectPresent;
 import com.google.inject.Inject;
 import model.JsonContent;
 import modules.SecurityModule;
 //import org.pac4j.cas.profile.CasProxyProfile;
 import org.pac4j.core.client.Client;
 import org.pac4j.core.config.Config;
+import org.pac4j.core.context.WebContext;
+import org.pac4j.core.context.session.SessionStore;
 import org.pac4j.core.exception.TechnicalException;
 import org.pac4j.core.exception.http.HttpAction;
-import org.pac4j.core.profile.CommonProfile;
+import org.pac4j.core.profile.UserProfile;
 import org.pac4j.core.profile.ProfileManager;
 import org.pac4j.core.util.CommonHelper;
 import org.pac4j.core.util.Pac4jConstants;
@@ -18,9 +20,10 @@ import org.pac4j.http.client.direct.HeaderClient;
 import org.pac4j.jwt.config.signature.SecretSignatureConfiguration;
 import org.pac4j.jwt.profile.JwtGenerator;
 import org.pac4j.play.PlayWebContext;
+//import org.pac4j.play.context.PlayFrameworkParameters;
 import org.pac4j.play.http.PlayHttpActionAdapter;
 import org.pac4j.play.java.Secure;
-import org.pac4j.play.store.PlaySessionStore;
+import org.pac4j.play.store.PlayCacheSessionStore;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -29,6 +32,7 @@ import authorizers.Roles;
 import util.Utils;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.management.relation.RoleList;
 
@@ -36,28 +40,34 @@ public class Application extends Controller {
 
     @Inject
     private Config config;
-
+ 
     @Inject
-    private PlaySessionStore playSessionStore;
+    private SessionStore playSessionStore;
 
-    private List<CommonProfile> getProfiles(Http.Request request) {
-        final PlayWebContext context = new PlayWebContext(request, playSessionStore);
-        final ProfileManager<CommonProfile> profileManager = new ProfileManager(context);
-        return profileManager.getAll(true);
+    
+    private UserProfile getProfile(Http.Request request) {
+        PlayWebContext webContext = new PlayWebContext(request);
+        ProfileManager profileManager = new ProfileManager(webContext, playSessionStore);
+        Optional profile = profileManager.getProfile();
+        if (profile.isPresent()) {
+            return (UserProfile)profile.get();
+        } 
+        return null; 
+        //final PLayFrameworkParameters parameters = new PLayFrameworkParameters(request);
+        //final org.pac4j.core.context.WebContext context = config.getWebContextFactory().newContext(request);
+        //final org.pac4j.core.context.session.SessionStore sessionStore = config.getSessionStoreFactory().newSessionStore(request);
+        //final ProfileManager profileManager = config.getProfileManagerFactory().apply(context, sessionStore);
+        //return profileManager.getProfiles();
     }
  
     @Secure(clients = "AnonymousClient")
     public Result index(Http.Request request) throws Exception {
-        final PlayWebContext context = new PlayWebContext(request, playSessionStore);
-        final String sessionId = context.getSessionStore().getOrCreateSessionId(context);
-        final String token = (String) context.getRequestAttribute(Pac4jConstants.CSRF_TOKEN).orElse(null);
-        // profiles (maybe be empty if not authenticated)
-        return ok(views.html.index.render(getProfiles(request), token, sessionId));
+        return ok(views.html.index.render(getProfile(request), null, null));
     }
 
     private Result protectedIndexView(Http.Request request) {
         // profiles
-        return ok(views.html.protectedIndex.render(getProfiles(request)));
+        return ok(views.html.protectedIndex.render(getProfile(request)));
     }
 
     /* 
@@ -69,7 +79,7 @@ public class Application extends Controller {
 
     private Result notProtectedIndexView(Http.Request request) {
         // profiles
-        return ok(views.html.notprotectedIndex.render(getProfiles(request)));
+        return ok(views.html.notprotectedIndex.render(getProfile(request)));
     }
 
     @Secure(clients = "HeaderClient")
