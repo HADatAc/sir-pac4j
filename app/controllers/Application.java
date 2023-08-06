@@ -4,7 +4,7 @@ import be.objectify.deadbolt.java.actions.SubjectPresent;
 import com.google.inject.Inject;
 import model.JsonContent;
 import modules.SecurityModule;
-import org.pac4j.cas.profile.CasProxyProfile;
+//import org.pac4j.cas.profile.CasProxyProfile;
 import org.pac4j.core.client.Client;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.exception.TechnicalException;
@@ -13,7 +13,7 @@ import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.profile.ProfileManager;
 import org.pac4j.core.util.CommonHelper;
 import org.pac4j.core.util.Pac4jConstants;
-import org.pac4j.http.client.indirect.FormClient;
+//import org.pac4j.http.client.indirect.FormClient;
 import org.pac4j.http.client.direct.HeaderClient;
 import org.pac4j.jwt.config.signature.SecretSignatureConfiguration;
 import org.pac4j.jwt.profile.JwtGenerator;
@@ -60,10 +60,12 @@ public class Application extends Controller {
         return ok(views.html.protectedIndex.render(getProfiles(request)));
     }
 
+    /* 
     @Secure(clients = "FacebookClient", matchers = "excludedPath")
     public Result facebookIndex(Http.Request request) {
         return protectedIndexView(request);
     }
+    */
 
     private Result notProtectedIndexView(Http.Request request) {
         // profiles
@@ -75,36 +77,49 @@ public class Application extends Controller {
         return notProtectedIndexView(request);
     }
 
+    /* 
     public Result facebookNotProtectedIndex(Http.Request request) {
         return notProtectedIndexView(request);
     }
+    */
 
+    /* 
     @Secure(clients = "FacebookClient", authorizers = "admin")
     public Result facebookAdminIndex(Http.Request request) {
         return protectedIndexView(request);
     }
+    */
 
+    /* 
     @Secure(clients = "FacebookClient", authorizers = "custom")
     public Result facebookCustomIndex(Http.Request request) {
         return protectedIndexView(request);
     }
+    */
 
+    /* 
     @Secure(clients = "TwitterClient,FacebookClient")
     public Result twitterIndex(Http.Request request) {
         return protectedIndexView(request);
     }
+    */
 
+    /* 
     @Secure
     public Result protectedIndex(Http.Request request) {
         return protectedIndexView(request);
     }
+    */
 
+    /* 
     @Secure(clients = "FormClient")
     //f@SubjectPresent(handlerKey = "FormClient", forceBeforeAuthCheck = true)
     public Result formIndex(Http.Request request) {
         return protectedIndexView(request);
     }
+    */
 
+    /* 
     // Setting the isAjax parameter is no longer necessary as AJAX requests are automatically detected:
     // a 401 error response will be returned instead of a redirection to the login url.
     @Secure(clients = "FormClient")
@@ -113,12 +128,16 @@ public class Application extends Controller {
         JsonContent jsonContent = new JsonContent(content.body());
         return ok(jsonContent);
     }
+    */
 
+    /* 
     @Secure(clients = "IndirectBasicAuthClient")
     public Result basicauthIndex(Http.Request request) {
         return protectedIndexView(request);
     }
+    */
 
+    /* 
     //@Secure(clients = "DirectBasicAuthClient,ParameterClient,DirectFormClient")
     @Secure(clients = "DirectBasicAuthClient,ParameterClient")
     public Result dbaIndex(Http.Request request) {
@@ -127,7 +146,9 @@ public class Application extends Controller {
 
         return protectedIndexView(request);
     }
+    */
 
+    /* 
     @Secure(clients = "CasClient")
     public Result casIndex(Http.Request request) {
         final CommonProfile profile = getProfiles(request).get(0);
@@ -139,16 +160,21 @@ public class Application extends Controller {
         }
         return ok(views.html.casProtectedIndex.render(profile, service, proxyTicket));
     }
+    */
 
+    /* 
     @Secure(clients = "SAML2Client")
     public Result samlIndex(Http.Request request) {
         return protectedIndexView(request);
     }
+    */
 
+    /* 
     @Secure(clients = "OidcClient")
     public Result oidcIndex(Http.Request request) {
         return protectedIndexView(request);
     }
+    */
 
     @Secure(clients = "HeaderClient", authorizers = Roles.AUTHENTICATED)
     public Result signedAuthenticatedIndex(Http.Request request) {
@@ -165,16 +191,21 @@ public class Application extends Controller {
         return protectedIndexView(request);
     }
 
+    /* 
     //@Secure(clients = "AnonymousClient", authorizers = "csrfCheck")
     public Result csrfIndex(Http.Request request) {
         return ok(views.html.csrf.render(getProfiles(request)));
     }
+    */
 
+    /* 
     public Result loginForm() throws TechnicalException {
         final FormClient formClient = (FormClient) config.getClients().findClient("FormClient").get();
         return ok(views.html.loginForm.render(formClient.getCallbackUrl()));
     }
+    */
 
+    /* 
     public Result jwt(Http.Request request) {
         final List<CommonProfile> profiles = getProfiles(request);
         final JwtGenerator generator = new JwtGenerator(new SecretSignatureConfiguration(SecurityModule.JWT_SALT));
@@ -184,7 +215,9 @@ public class Application extends Controller {
         }
         return ok(views.html.jwt.render(token));
     }
+    */
 
+    /* 
     public Result forceLogin(Http.Request request) {
         final PlayWebContext context = new PlayWebContext(request, playSessionStore);
         final Client client = config.getClients().findClient(context.getRequestParameter(Pac4jConstants.DEFAULT_CLIENT_NAME_PARAMETER).get()).get();
@@ -195,4 +228,5 @@ public class Application extends Controller {
             throw new TechnicalException(e);
         }
     }
+    */
 }
